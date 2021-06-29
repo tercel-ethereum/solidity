@@ -55,6 +55,9 @@ public:
 	/// @returns an empty shared pointer on error.
 	std::shared_ptr<Object> parse(std::shared_ptr<langutil::Scanner> const& _scanner, bool _reuseScanner);
 
+	using SourceNameMap = std::map<unsigned, std::shared_ptr<std::string const>>;
+	std::optional<SourceNameMap> tryParseSourceNameMapping() const;
+
 private:
 	std::shared_ptr<Object> parseObject(Object* _containingObject = nullptr);
 	std::shared_ptr<Block> parseCode();
@@ -66,6 +69,8 @@ private:
 	void addNamedSubObject(Object& _container, YulString _name, std::shared_ptr<ObjectNode> _subObject);
 
 	Dialect const& m_dialect;
+
+	std::optional<SourceNameMap> m_sourceNameMapping;
 };
 
 }
