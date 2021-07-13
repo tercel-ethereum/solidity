@@ -26,6 +26,7 @@
 #include <libyul/Exceptions.h>
 
 #include <liblangutil/Token.h>
+#include <liblangutil/Scanner.h>
 
 #include <libsolutil/StringUtils.h>
 
@@ -141,44 +142,28 @@ optional<ObjectParser::ReverseSourceNameMap> ObjectParser::tryGetSourceLocationM
 		return nullopt;
 	solAssert(sm.size() == 3, "");
 
-	// Let @c text point to the parameter value (last match).
-	auto text = sm[2].str();
+	Scanner scanner(make_shared<CharStream>(sm[2].str(), ""));
+	ObjectParser::ReverseSourceNameMap sourceNames;
 
-	// iteratively match for NUM : STRING_LITERAL and increment
-	static regex const firstParamRE(R"~~~(\s*(\d+)\s*:\s*"((?:\\\"|[^\"])*)")~~~",
-		std::regex_constants::ECMAScript | std::regex_constants::optimize
-	);
-	static regex const continuationParamRE(R"~~~(\s*,\s*(\d+)\s*:\s*"((?:\\\"|[^\"])*)")~~~",
-		std::regex_constants::ECMAScript | std::regex_constants::optimize
-	);
-
-	ReverseSourceNameMap result;
-
-	while (!text.empty())
+	while (true)
 	{
-		if (!std::regex_search(text, sm, !result.empty() ? continuationParamRE : firstParamRE))
-		{
-			_errorReporter.syntaxError(9804_error, _location, "Could not fully parse @use-src arguments.");
-			return nullopt;
-		}
-		solAssert(sm.size() == 3, "");
-
-		auto const len = sm[0].length();
-		solAssert(len > 0, "");
-
-		auto const sourceIndex = toUnsignedInt(sm[1].str());
+		if (scanner.currentToken() != Token::Number)
+			break;
+		auto sourceIndex = toUnsignedInt(scanner.currentLiteral());
 		if (!sourceIndex)
-		{
-			_errorReporter.syntaxError(1619_error, _location, "Invalid parameters for @use-src."); // TODO: error code
-			return nullopt;
-		}
-
-		auto sourceName = make_shared<string const>(sm[2].str());
-		result[*sourceIndex] = move(sourceName);
-		text = text.substr(static_cast<size_t>(len));
+			break;
+		if (scanner.next() != Token::Colon)
+			break;
+		if (scanner.next() != Token::StringLiteral)
+			break;
+		sourceNames[*sourceIndex] = make_shared<string const>(scanner.currentLiteral());
+		if (scanner.next() != Token::Comma)
+			return {move(sourceNames)};
+		scanner.next();
 	}
 
-	return result;
+	_errorReporter.syntaxError(9804_error, _location, "Error parsing arguments to @use-src. Expected: <number> \":\" \"<filename>\", ...");
+	return nullopt;
 }
 
 shared_ptr<Block> ObjectParser::parseBlock()
