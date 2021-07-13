@@ -55,18 +55,13 @@ public:
 	/// @returns an empty shared pointer on error.
 	std::shared_ptr<Object> parse(std::shared_ptr<langutil::Scanner> const& _scanner, bool _reuseScanner);
 
-	using ReverseSourceNameMap = std::map<unsigned, std::string>;
-	using CharStreamMap = std::map<unsigned, std::shared_ptr<langutil::CharStream>>;
+	using ReverseSourceNameMap = std::map<unsigned, std::shared_ptr<std::string const>>;
 	static std::optional<ReverseSourceNameMap> tryGetSourceLocationMapping(
 		std::string const& _text,
 		langutil::SourceLocation const& _location,
 		langutil::ErrorReporter& _errorReporter
 	);
 	std::optional<ReverseSourceNameMap> tryGetSourceLocationMapping() const;
-	std::optional<CharStreamMap> convertToCharStreamMap(ReverseSourceNameMap const& _reverseSourceNames) const;
-
-	/// Determines how many source files at most can be given to @use-src.
-	static constexpr size_t MaxSourceFiles = 256;
 
 private:
 	std::shared_ptr<Object> parseObject(Object* _containingObject = nullptr);
@@ -79,6 +74,8 @@ private:
 	void addNamedSubObject(Object& _container, YulString _name, std::shared_ptr<ObjectNode> _subObject);
 
 	Dialect const& m_dialect;
+
+	std::optional<ReverseSourceNameMap> m_sourceIndexToNameOverrides;
 };
 
 }

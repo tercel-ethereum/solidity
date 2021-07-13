@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(use_src_simple)
 	auto const mapping = ObjectParser::tryGetSourceLocationMapping(text, location, reporter);
 	BOOST_REQUIRE(mapping);
 	BOOST_REQUIRE_EQUAL(mapping->size(), 1);
-	BOOST_REQUIRE_EQUAL(mapping->at(0), "contract.sol");
+	BOOST_REQUIRE_EQUAL(*mapping->at(0), "contract.sol");
 }
 
 BOOST_AUTO_TEST_CASE(use_src_multiple)
@@ -199,8 +199,8 @@ BOOST_AUTO_TEST_CASE(use_src_multiple)
 	);
 	BOOST_REQUIRE(mapping);
 	BOOST_REQUIRE_EQUAL(mapping->size(), 2);
-	BOOST_REQUIRE_EQUAL(mapping->at(0), "contract.sol");
-	BOOST_REQUIRE_EQUAL(mapping->at(1), "misc.yul");
+	BOOST_REQUIRE_EQUAL(*mapping->at(0), "contract.sol");
+	BOOST_REQUIRE_EQUAL(*mapping->at(1), "misc.yul");
 }
 
 BOOST_AUTO_TEST_CASE(use_src_escaped_filenames)
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(use_src_escaped_filenames)
 	BOOST_REQUIRE(mapping);
 	BOOST_REQUIRE_EQUAL(mapping->size(), 1);
 	BOOST_REQUIRE(mapping->count(42));
-	BOOST_REQUIRE_EQUAL(mapping->at(42), "con\\\"tract@\\\".sol");
+	BOOST_REQUIRE_EQUAL(*mapping->at(42), "con\\\"tract@\\\".sol");
 }
 
 BOOST_AUTO_TEST_CASE(use_src_invalid_syntax_malformed_param_1)
@@ -271,25 +271,6 @@ BOOST_AUTO_TEST_CASE(use_src_invalid_syntax_invalid_index)
 	BOOST_REQUIRE(reporter.hasErrors());
 	BOOST_CHECK_EQUAL(errors.size(), 1);
 	BOOST_CHECK_EQUAL(errors.front()->errorId().error, 1619);
-}
-
-BOOST_AUTO_TEST_CASE(use_src_invalid_syntax_param_excess)
-{
-	ErrorList errors;
-	SourceLocation location;
-	ErrorReporter reporter(errors);
-
-	std::stringstream sstr;
-	sstr << "@use-src 0:\"source0.sol\"";
-	for (auto const i: views::iota(1u, ObjectParser::MaxSourceFiles + 1))
-		sstr << ", " << i << ":\"source" << i << ".sol\"";
-	auto const text = sstr.str();
-
-	auto const mapping = ObjectParser::tryGetSourceLocationMapping(text, location, reporter);
-
-	BOOST_REQUIRE(reporter.hasErrors());
-	BOOST_CHECK_EQUAL(errors.size(), 1);
-	BOOST_CHECK_EQUAL(errors.front()->errorId().error, 6588);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

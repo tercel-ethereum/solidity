@@ -44,6 +44,8 @@ shared_ptr<Object> ObjectParser::parse(shared_ptr<Scanner> const& _scanner, bool
 	{
 		shared_ptr<Object> object;
 		m_scanner = _scanner;
+		m_sourceIndexToNameOverrides = tryGetSourceLocationMapping();
+
 		if (currentToken() == Token::LBrace)
 		{
 			// Special case: Code-only form.
@@ -163,11 +165,6 @@ optional<ObjectParser::ReverseSourceNameMap> ObjectParser::tryGetSourceLocationM
 
 		auto const len = sm[0].length();
 		solAssert(len > 0, "");
-		if (result.size() >= MaxSourceFiles)
-		{
-			_errorReporter.syntaxError(6588_error, _location, "Excessive use of @use-src.");
-			return nullopt;
-		}
 
 		auto const sourceIndex = toUnsignedInt(sm[1].str());
 		if (!sourceIndex)
@@ -176,36 +173,18 @@ optional<ObjectParser::ReverseSourceNameMap> ObjectParser::tryGetSourceLocationM
 			return nullopt;
 		}
 
-		auto fileName = sm[2].str();
-		result[*sourceIndex] = fileName;
+		auto sourceName = make_shared<string const>(sm[2].str());
+		result[*sourceIndex] = move(sourceName);
 		text = text.substr(static_cast<size_t>(len));
 	}
 
 	return result;
 }
 
-optional<ObjectParser::CharStreamMap>
-ObjectParser::convertToCharStreamMap(ReverseSourceNameMap const& _reverseSourceNames) const
-{
-	(void) _reverseSourceNames; // TODO map file names to their CharStream (needs CompilerStack for that)
-	return nullopt;
-}
-
 shared_ptr<Block> ObjectParser::parseBlock()
 {
-	// Parser parser(m_errorReporter, m_dialect);
-	// shared_ptr<Block> block = parser.parse(m_scanner, true);
-	// TODO: maybe here check for @use-src?
-	unique_ptr<Parser> parser;
-	if (auto sourceLocationMap = tryGetSourceLocationMapping())
-	{
-		auto charStreamMap = convertToCharStreamMap(*sourceLocationMap);
-		yulAssert(charStreamMap, "");
-		parser = make_unique<Parser>(m_errorReporter, m_dialect, *charStreamMap);
-	}
-	else
-		parser = make_unique<Parser>(m_errorReporter, m_dialect);
-	shared_ptr<Block> block = parser->parse(m_scanner, true);
+	Parser parser(m_errorReporter, m_dialect, m_sourceIndexToNameOverrides);
+	shared_ptr<Block> block = parser.parse(m_scanner, true);
 	yulAssert(block || m_errorReporter.hasErrors(), "Invalid block but no error!");
 	return block;
 }
