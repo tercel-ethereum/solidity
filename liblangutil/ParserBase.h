@@ -49,8 +49,6 @@ public:
 
 	virtual ~ParserBase() = default;
 
-	std::shared_ptr<CharStream> source() const { return m_scanner->charStream(); }
-
 protected:
 	/// Utility class that creates an error and throws an exception if the
 	/// recursion depth is too deep.
