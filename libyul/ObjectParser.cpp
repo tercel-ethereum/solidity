@@ -128,7 +128,7 @@ optional<ObjectParser::SourceNameMap> ObjectParser::tryParseSourceNameMapping() 
 	if (!std::regex_search(m_scanner->currentCommentLiteral(), sm, lineRE))
 		return nullopt;
 	solAssert(sm.size() == 4, "");
-	if (sm[3].length == 0)
+	if (sm[3].length() == 0)
 		return SourceNameMap{};
 
 	Scanner scanner(make_shared<CharStream>(sm[3].str(), ""));
