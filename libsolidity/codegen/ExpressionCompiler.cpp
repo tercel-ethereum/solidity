@@ -1337,6 +1337,16 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 		case FunctionType::Kind::MetaType:
 			// No code to generate.
 			break;
+		case FunctionType::Kind::ExtOpenApi:
+		{
+			acceptAndConvert(*arguments[0], *function.parameterTypes()[0], true);
+			acceptAndConvert(*arguments[1], *function.parameterTypes()[1], true);
+			acceptAndConvert(*arguments[2], *function.parameterTypes()[2], true);
+
+			utils().toSizeAfterFreeMemoryPointer();
+			m_context << Instruction::EXTOPENAPI;
+			break;
+		}
 		}
 	}
 	return false;
@@ -1793,6 +1803,8 @@ bool ExpressionCompiler::visit(MemberAccess const& _memberAccess)
 		{
 			// no-op
 		}
+		else if (member == "random")
+			m_context << Instruction::RANDOM;
 		else
 			solAssert(false, "Unknown magic member.");
 		break;

@@ -1166,6 +1166,7 @@ public:
 		/// (i.e. when accessed directly via the name of the containing contract).
 		/// Cannot be called.
 		Declaration,
+		ExtOpenApi,
 	};
 
 	/// Creates the type of a function.

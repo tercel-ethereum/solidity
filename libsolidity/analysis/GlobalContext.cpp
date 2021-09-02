@@ -61,6 +61,7 @@ int magicVariableToID(std::string const& _name)
 	else if (_name == "tx") return -26;
 	else if (_name == "type") return -27;
 	else if (_name == "this") return -28;
+	else if (_name == "extopenapi") return -29;
 	else
 		solAssert(false, "Unknown magic variable: \"" + _name + "\".");
 }
@@ -102,6 +103,7 @@ inline vector<shared_ptr<MagicVariableDeclaration const>> constructMagicVariable
 			true,
 			StateMutability::Pure
 		)),
+		magicVarDecl("extopenapi", TypeProvider::function(strings{"string memory", "string memory", "string memory"}, strings{"bytes memory"}, FunctionType::Kind::ExtOpenApi, false, StateMutability::Pure)),
 	};
 }
 

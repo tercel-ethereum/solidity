@@ -22,5 +22,5 @@ make -j2
 
 if [[ "${CI}" == "" ]]; then
 	echo "Installing ..."
-	sudo make install
+	make install
 fi

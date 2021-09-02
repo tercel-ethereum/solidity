@@ -99,6 +99,8 @@ struct InterpreterState
 	size_t maxExprNesting = 0;
 	ControlFlowState controlFlowState = ControlFlowState::Default;
 
+	u256 random = 0;
+
 	/// Prints execution trace and non-zero storage to @param _out.
 	void dumpTraceAndState(std::ostream& _out) const;
 	/// Prints non-zero storage to @param _out.

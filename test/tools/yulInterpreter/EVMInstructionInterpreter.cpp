@@ -258,6 +258,18 @@ u256 EVMInstructionInterpreter::eval(
 		return m_state.difficulty;
 	case Instruction::GASLIMIT:
 		return m_state.gaslimit;
+
+	case Instruction::RANDOM:
+		return m_state.random;
+	case Instruction::EXTOPENAPI:
+		logTrace(_instruction, arg);
+		if (accessMemory(arg[0], arg[2]))
+			copyZeroExtended(
+				m_state.memory, m_state.returndata,
+				size_t(arg[0]), size_t(arg[1]), size_t(arg[2])
+			);
+		return 0;
+
 	// --------------- memory / storage / logs ---------------
 	case Instruction::MLOAD:
 		accessMemory(arg[0], 0x20);
