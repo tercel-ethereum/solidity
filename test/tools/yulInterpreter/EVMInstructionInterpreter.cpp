@@ -226,7 +226,7 @@ u256 EVMInstructionInterpreter::eval(
 		return u256(keccak256(h256(arg[0] + 1)));
 	case Instruction::EXTCODECOPY:
 		logTrace(_instruction, arg);
-		if (accessMemory(arg[1], arg[3]))
+		if (accessMemory(arg[0], arg[1]))
 			// TODO this way extcodecopy and codecopy do the same thing.
 			copyZeroExtended(
 				m_state.memory, m_state.code,
@@ -261,13 +261,10 @@ u256 EVMInstructionInterpreter::eval(
 
 	case Instruction::RANDOM:
 		return m_state.random;
+	case Instruction::MYOPCODE:
 	case Instruction::EXTOPENAPI:
+		accessMemory(arg[0], arg[1]);
 		logTrace(_instruction, arg);
-		if (accessMemory(arg[0], arg[2]))
-			copyZeroExtended(
-				m_state.memory, m_state.returndata,
-				size_t(arg[0]), size_t(arg[1]), size_t(arg[2])
-			);
 		return 0;
 
 	// --------------- memory / storage / logs ---------------

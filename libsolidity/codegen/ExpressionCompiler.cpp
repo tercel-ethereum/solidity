@@ -1337,12 +1337,26 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 		case FunctionType::Kind::MetaType:
 			// No code to generate.
 			break;
+		case FunctionType::Kind::MyOpcode:
+		{
+			arguments[0]->accept(*this);
+			utils().fetchFreeMemoryPointer();
+			utils().packedEncode(
+				{arguments[0]->annotation().type},
+				{TypeProvider::array(DataLocation::Memory, true)}
+			);
+			utils().toSizeAfterFreeMemoryPointer();
+			m_context << Instruction::MYOPCODE;
+			break;
+		}
 		case FunctionType::Kind::ExtOpenApi:
 		{
-			acceptAndConvert(*arguments[0], *function.parameterTypes()[0], true);
-			acceptAndConvert(*arguments[1], *function.parameterTypes()[1], true);
-			acceptAndConvert(*arguments[2], *function.parameterTypes()[2], true);
-
+			arguments[0]->accept(*this);
+			utils().fetchFreeMemoryPointer();
+			utils().packedEncode(
+				{arguments[0]->annotation().type},
+				{TypeProvider::array(DataLocation::Memory, true)}
+			);
 			utils().toSizeAfterFreeMemoryPointer();
 			m_context << Instruction::EXTOPENAPI;
 			break;

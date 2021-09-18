@@ -176,6 +176,12 @@ KnownState::StoreOperation KnownState::feedItem(AssemblyItem const& _item, bool 
 					applyKeccak256(arguments.at(0), arguments.at(1), _item.location())
 				);
 				break;
+			case Instruction::EXTOPENAPI:
+				setStackElement(
+					m_stackHeight + static_cast<int>(_item.deposit()),
+					m_expressionClasses->find(_item, arguments, _copyItem)
+				);
+				break;
 			default:
 				bool invMem =
 					SemanticInformation::memory(_item.instruction()) == SemanticInformation::Write;

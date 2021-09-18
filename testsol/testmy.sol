@@ -5,18 +5,27 @@ pragma solidity >=0.9.0;
 
 contract TestMy {
     event WriteApi(address indexed user, bytes data);
+    uint public result=1;
+    function trevert() external pure {
+        revert('test revert');
+    }
 
     function getRandom() external view returns (uint256) {
         return block.random;
     }
     
-    function callapi() external view returns (bytes memory) {
-        return extopenapi("url://", "parameters:", "string");
+    function callmyopcode() external view returns (uint256) {
+        return myopcode("dog");
     }
     
-    function writeapi() external returns (bytes memory) {
+    function callapi() external view returns (uint256, uint256) {
+        return extopenapi("url://");
+    }
+    
+    function writemyopcode() external returns (uint256) {
         emit WriteApi(msg.sender, "writeapi result");
-        return extopenapi("url://", "parameters:", "string");
+        result = myopcode("dog");
+        return result;
     }
 
     function testsha3r() external view returns (bytes32) {

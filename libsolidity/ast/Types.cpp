@@ -2901,6 +2901,7 @@ string FunctionType::richIdentifier() const
 	case Kind::ABIEncodeWithSignature: id += "abiencodewithsignature"; break;
 	case Kind::ABIDecode: id += "abidecode"; break;
 	case Kind::MetaType: id += "metatype"; break;
+	case Kind::MyOpcode: id += "myopcode"; break;
 	case Kind::ExtOpenApi: id += "extopenapi"; break;
 	}
 	id += "_" + stateMutabilityToString(m_stateMutability);
