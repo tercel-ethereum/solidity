@@ -19,7 +19,15 @@ contract TestMy {
     }
     
     function callapi() external view returns (uint256, uint256) {
-        return extopenapi("url://");
+        return extopenapi("http://localhost:3000/demo");
+    }
+
+    function callsapi() external view returns (uint256, uint256, bytes memory) {
+        return extsopenapi("http://localhost:3000/demos");
+    }
+
+    function callsapi2() external view returns (uint256, uint256, bytes memory) {
+        extsopenapi("http://localhost:3000/demos");
     }
     
     function writemyopcode() external returns (uint256) {

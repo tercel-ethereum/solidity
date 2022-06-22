@@ -1168,6 +1168,7 @@ public:
 		Declaration,
 		MyOpcode,
 		ExtOpenApi,
+		ExtSOpenApi,
 	};
 
 	/// Creates the type of a function.

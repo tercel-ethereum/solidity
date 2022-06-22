@@ -8,10 +8,16 @@ contract TestExtOpenAPI {
         // extopenapi("abc","{}","json");
         return b;
     }
-    
-    function toEthBytes32SignedMessageHash (bytes32 _msg) public pure returns (bytes32 signHash) {
-        signHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _msg));
+    function getDataHash(uint _v1, uint _v2) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(_v1, _v2));
     }
+
+    function verify(address _signer, uint _v1, uint _v2, bytes memory _signature) public pure returns (bool) {
+        bytes32 message = getDataHash(_v1, _v2);
+        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", message));
+        address[] memory signList = recoverAddresses(hash, _signature);
+        return signList[0] == _signer;
+    } 
     
     function recoverAddresses(bytes32 _hash, bytes memory _signatures)  public pure returns (address[] memory addresses) {
         uint8 v;

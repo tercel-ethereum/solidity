@@ -2903,6 +2903,7 @@ string FunctionType::richIdentifier() const
 	case Kind::MetaType: id += "metatype"; break;
 	case Kind::MyOpcode: id += "myopcode"; break;
 	case Kind::ExtOpenApi: id += "extopenapi"; break;
+	case Kind::ExtSOpenApi: id += "extsopenapi"; break;
 	}
 	id += "_" + stateMutabilityToString(m_stateMutability);
 	id += identifierList(m_parameterTypes) + "returns" + identifierList(m_returnParameterTypes);

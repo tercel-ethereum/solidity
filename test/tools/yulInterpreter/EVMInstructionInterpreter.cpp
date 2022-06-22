@@ -263,6 +263,7 @@ u256 EVMInstructionInterpreter::eval(
 		return m_state.random;
 	case Instruction::MYOPCODE:
 	case Instruction::EXTOPENAPI:
+	case Instruction::EXTSOPENAPI:
 		accessMemory(arg[0], arg[1]);
 		logTrace(_instruction, arg);
 		return 0;

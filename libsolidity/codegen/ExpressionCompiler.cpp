@@ -1361,6 +1361,18 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			m_context << Instruction::EXTOPENAPI;
 			break;
 		}
+		case FunctionType::Kind::ExtSOpenApi:
+		{
+			arguments[0]->accept(*this);
+			utils().fetchFreeMemoryPointer();
+			utils().packedEncode(
+				{arguments[0]->annotation().type},
+				{TypeProvider::array(DataLocation::Memory, true)}
+			);
+			utils().toSizeAfterFreeMemoryPointer();
+			m_context << Instruction::EXTSOPENAPI;
+			break;
+		}
 		}
 	}
 	return false;
